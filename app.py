@@ -736,6 +736,10 @@ def render_chat():
                 st.text(message["content"])
             else:
                 render_answer(message["content"])
+                if message.get("queries"):
+                    with st.expander("Executed Query", expanded=False):
+                        for q in message["queries"]:
+                            st.code(q, language="sql" if st.session_state.connection_kind == "sql" else "json")
 
     prompt = st.chat_input("Ask about your database")
     if not prompt:
@@ -747,16 +751,33 @@ def render_chat():
 
     with st.chat_message("assistant"):
         with st.spinner("Generating answer..."):
+            queries = []
             try:
                 messages = build_compact_messages(st.session_state.chat_history, prompt)
                 response = st.session_state.agent.invoke({"messages": messages})
                 answer = message_content_to_text(response["messages"][-1].content)
+                
+                for msg in response.get("messages", []):
+                    if hasattr(msg, "tool_calls") and msg.tool_calls:
+                        for tc in msg.tool_calls:
+                            name = tc.get("name")
+                            args = tc.get("args", {})
+                            if name == "sql_db_query" and "query" in args:
+                                queries.append(args["query"])
+                            elif name in ("find_mongo_documents", "count_mongo_documents", "extract_mongo_urls", "extract_mongo_link_fields", "distinct_mongo_values") and "query_json" in args:
+                                queries.append(args["query_json"])
+                            elif name == "aggregate_mongo_documents" and "pipeline_json" in args:
+                                queries.append(args["pipeline_json"])
             except Exception as exc:
                 answer = f"I ran into an error: {exc}"
 
             render_answer(answer)
+            if queries:
+                with st.expander("Executed Query", expanded=False):
+                    for q in queries:
+                        st.code(q, language="sql" if st.session_state.connection_kind == "sql" else "json")
 
-    st.session_state.chat_history.append({"role": "assistant", "content": answer})
+    st.session_state.chat_history.append({"role": "assistant", "content": answer, "queries": queries})
 
 
 def main():
