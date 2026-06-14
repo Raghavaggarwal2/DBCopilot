@@ -1,4 +1,4 @@
-# DataLens: AI Data Analyst & Database Chat
+# Omnilytix: Autonomous AI Data Analyst for SQL & MongoDB
 
 DataLens is a comprehensive, AI-powered Data Analyst application. Built on top of **LangChain**, **Streamlit**, and the **Groq API**, DataLens transforms natural language questions into database queries, parses the results, and automatically generates interactive insights, structured data tables, and advanced visualizations.
 
