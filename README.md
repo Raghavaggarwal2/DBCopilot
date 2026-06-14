@@ -25,7 +25,10 @@ Behind the scenes, Omnilytix runs a hyper-optimized **Pandas Background Intercep
 - **Zero Token Overhead**: It mathematically checks the dataset locally for Missing Values (>5%) and Extreme Outliers (using IQR boundaries) without feeding raw datasets to the LLM.
 - **Proactive AI**: Finds are condensed into a lightweight tag (`[EDA Profile: ...]`) and appended to the tool execution, prompting the AI to proactively warn you in its response (e.g., *"Here is your data, but please note that the 'Revenue' column has 12 outliers."*).
 
-### 5. Rich Chat Interface (Streamlit)
+### 5. Generative Analytical Insights
+Beyond just rendering charts, the AI acts as a true analyst. Whenever data is retrieved, the LLM "reads" the results and generates **small, conversational text insights** summarizing the findings (e.g., *"As you can see, Customer A is leading by a massive margin, contributing to 40% of the total revenue..."*).
+
+### 6. Rich Chat Interface (Streamlit)
 The `app.py` UI is heavily customized for data analysis:
 - **Query Transparency**: Every SQL or Mongo query executed by the AI is displayed in a collapsible "Executed Query" expander so you can audit exactly how the data was retrieved.
 - **Native DataFrames**: Arrays of records are automatically detected and rendered as interactive Streamlit tables.

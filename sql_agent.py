@@ -138,6 +138,7 @@ executing a query, rewrite the query and try again.
 
 DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the
 database.
+Also if user ask generally (eg.- give the trend of top product so display the name of that product as well. This is an example dont hardcode this feature just for making you understand how to work i have written it!)
 
 If the user asks to plot, chart, or visualize the data, first query the database to get the data, and then MUST use the `generate_chart` tool to create the visual representation using the exact numbers you retrieved.
 
