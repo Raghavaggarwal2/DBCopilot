@@ -1,19 +1,12 @@
-import os
 from dataclasses import dataclass
 from typing import Any
 
-from dotenv import load_dotenv
 from langchain_community.utilities import SQLDatabase
 from pymongo import MongoClient
 from sqlalchemy.engine import URL
 
 
-load_dotenv()
-
-
 DEFAULT_SQL_SERVER_DRIVER = "ODBC Driver 18 for SQL Server"
-DEFAULT_MONGODB_URI_ENV = "MONGODB_URI"
-DEFAULT_MONGODB_DATABASE_ENV = "MONGODB_DATABASE"
 
 
 @dataclass(frozen=True)
@@ -68,31 +61,7 @@ class MongoDatabaseConnection:
         return list(cursor)
 
 
-def get_database_uri_from_env() -> str:
-    database_uri = os.getenv("DATABASE_URL")
-    if not database_uri:
-        raise RuntimeError(
-            "Set DATABASE_URL to a SQLAlchemy URI, for example: "
-            "postgresql+psycopg://user:password@localhost:5432/database_name"
-        )
-    return database_uri
 
-
-def get_mongodb_uri_from_env() -> str:
-    mongodb_uri = os.getenv(DEFAULT_MONGODB_URI_ENV)
-    if not mongodb_uri:
-        raise RuntimeError(
-            "Set MONGODB_URI to a MongoDB connection string, for example: "
-            "mongodb://user:password@localhost:27017"
-        )
-    return mongodb_uri
-
-
-def get_mongodb_database_from_env() -> str:
-    database_name = os.getenv(DEFAULT_MONGODB_DATABASE_ENV)
-    if not database_name:
-        raise RuntimeError("Set MONGODB_DATABASE to the database name you want to query.")
-    return database_name
 
 
 def build_database_uri(config: DatabaseConfig) -> str:
@@ -159,9 +128,6 @@ def create_database_from_config(config: DatabaseConfig) -> SQLDatabase:
     return create_database_from_uri(build_database_uri(config))
 
 
-def create_database_from_env() -> SQLDatabase:
-    return create_database_from_uri(get_database_uri_from_env())
-
 
 def create_mongo_database_from_config(config: MongoDatabaseConfig) -> MongoDatabaseConnection:
     if not config.uri.strip():
@@ -171,10 +137,10 @@ def create_mongo_database_from_config(config: MongoDatabaseConfig) -> MongoDatab
     return MongoDatabaseConnection(config.uri.strip(), config.database.strip())
 
 
-def create_mongo_database_from_env() -> MongoDatabaseConnection:
-    return create_mongo_database_from_config(
-        MongoDatabaseConfig(
-            uri=get_mongodb_uri_from_env(),
-            database=get_mongodb_database_from_env(),
-        )
-    )
+# def create_mongo_database_from_env() -> MongoDatabaseConnection:
+#     return create_mongo_database_from_config(
+#         MongoDatabaseConfig(
+#             uri=get_mongodb_uri_from_env(),
+#             database=get_mongodb_database_from_env(),
+#         )
+#     )

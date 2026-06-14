@@ -1,14 +1,9 @@
-import os
 
-from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain_groq import ChatGroq
 
-from database import create_database_from_env, create_mongo_database_from_env
+from database import create_database_from_uri, create_mongo_database_from_config, MongoDatabaseConfig
 from tools import build_mongo_tools, build_sql_tools
-
-
-load_dotenv()
 
 DEFAULT_MODEL_NAME = "qwen/qwen3-32b"
 
@@ -249,19 +244,23 @@ def ask_agent(agent, question, history=None):
 
 
 def main():
-    load_dotenv()
-
     try:
-        groq_api_key = os.getenv("GROQ_API_KEY")
-        database_kind = os.getenv("DATABASE_KIND", "sql").strip().lower()
+        groq_api_key = input("Enter Groq API Key: ").strip()
+        database_kind = input("Enter database kind (sql/mongo): ").strip().lower()
 
-        if database_kind in {"mongo", "mongodb", "nosql"} or (
-            os.getenv("MONGODB_URI") and not os.getenv("DATABASE_URL")
-        ):
-            database = create_mongo_database_from_env()
+        if database_kind in {"mongo", "mongodb", "nosql"}:
+            uri = input("Enter MongoDB URI: ").strip()
+            db_name = input("Enter MongoDB Database Name: ").strip()
+            if not uri or not db_name:
+                raise RuntimeError("MongoDB URI and Database Name are required.")
+            config = MongoDatabaseConfig(uri=uri, database=db_name)
+            database = create_mongo_database_from_config(config)
             agent = create_mongo_agent(database, groq_api_key)
         else:
-            database = create_database_from_env()
+            db_url = input("Enter SQL Database URI: ").strip()
+            if not db_url:
+                raise RuntimeError("SQL Database URI is required.")
+            database = create_database_from_uri(db_url)
             agent = create_sql_agent(database, groq_api_key)
     except Exception as exc:
         print(f"Failed to initialize database agent: {exc}")
