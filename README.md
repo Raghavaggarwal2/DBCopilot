@@ -58,23 +58,17 @@ Launch the interactive web interface:
 ```bash
 streamlit run app.py
 ```
-1. Expand the sidebar menu.
-2. Enter your Groq API Key.
-3. Select your Database Type (SQL or MongoDB) and enter the connection credentials.
-4. Click **Connect**.
-5. Start asking analytical questions! 
+1. Open the sidebar on the left.
+2. Enter your **Groq API key** (this is required to power the AI).
+3. Select your **Connection type** (`SQL database` or `MongoDB`).
+4. Enter your connection details:
+   - **For MongoDB**: Since the app is deployed, you must use a cloud database provider (like MongoDB Atlas). Paste your **Atlas Connection String** (e.g., `mongodb+srv://user:pass@cluster0.mongodb.net/`) into the `MongoDB URI` box and specify the `MongoDB database` name.
+   - **For SQL**: Select your `Database type` (PostgreSQL, MySQL, or SQL Server). Since the app is deployed, you must use a cloud database provider (like Render or Supabase). Paste your **External Database URL** (e.g., `postgres://user:pass@host.render.com/db`) directly into the **"Custom Connection URI"** box, OR manually enter the Cloud Host, Port, Username, and Password.
+5. Click the **Connect** button.
+6. Once connected, use the chat box to ask analytical questions in plain English!
    - *"Show me the top 5 highest paying customers as a bar chart."*
    - *"Create a donut chart of sales broken down by region."*
    - *"Generate a heatmap of our user behavioral correlations."*
-
-### 2. Terminal CLI Mode
-If you prefer a headless experience, run the CLI agent:
-```bash
-python sql_agent.py
-```
-You will be securely prompted via `input()` for your credentials and connection strings. Type `exit` or `quit` to leave the chat loop.
-
----
 
 ## 🏗️ Architecture
 

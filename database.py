@@ -66,7 +66,15 @@ class MongoDatabaseConnection:
 
 def build_database_uri(config: DatabaseConfig) -> str:
     if config.custom_uri:
-        return config.custom_uri.strip()
+        uri = config.custom_uri.strip()
+        # Automatically inject correct drivers for standard custom URIs if missing
+        if uri.startswith("postgres://"):
+            return uri.replace("postgres://", "postgresql+psycopg://", 1)
+        elif uri.startswith("postgresql://"):
+            return uri.replace("postgresql://", "postgresql+psycopg://", 1)
+        elif uri.startswith("mysql://"):
+            return uri.replace("mysql://", "mysql+pymysql://", 1)
+        return uri
 
     dialect = config.dialect.strip().lower()
     if not config.database:
